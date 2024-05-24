@@ -57,7 +57,7 @@ class SConj:
     left: Assertion
     right: Assertion
 
-type Assertion = STrue | SFalse | Seq | SNeg | SConj
+type Assertion = STrue | SFalse | SEq | SNeg | SConj
 
 def interpAssertion(sa: Assertion, t: float) -> bool:
     match sa:
