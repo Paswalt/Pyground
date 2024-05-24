@@ -108,6 +108,8 @@ class Fun:
     f: Callable[list[float], float]
     name: str = ""
     def __str__(self):
+        if len(self.terms) == 0:
+            return self.name
         return ("f_lam" if self.name == "" else self.name) + "(" + ", ".join([str(term) for term in self.terms]) + ")"
 
 type Term = Length | GVar | Integral | Fun
@@ -121,7 +123,7 @@ def interpTerm(v: Valuation, intv: Interval, term: Term) -> float:
             return v[name]
         case Integral(sa):
             return round(integrate.quad(lambda x: interpAssertion(sa, x), intv.start, intv.end)[0], 2)
-        case Fun(terms, f):
+        case Fun(terms, f, name):
             return f(list(map(lambda t: interpTerm(v, intv, t), terms)))
 
 
@@ -175,16 +177,13 @@ def plotTerm(term: Term, start: float, end: float, precision=1000):
     fig, axs = plt.subplots(num_plots, 1, sharex=True, figsize=(10,10))
     if (num_plots == 1):
         axs = [axs]
-    print(axs)
     for i, ob in enumerate(observables):
-        print(i)
         y_values = [interpObs(ob, t) for t in x_values]
         axs[i].step(x_values, y_values, label=ob.name, color=colors[i%5])
         axs[i].set_ylabel(ob.name)
         axs[i].grid(True)
     # Create plot for each state assertion
     for i, sa in enumerate(assertions, len(observables)):
-        print(i)
         y_values = [interpAssertion(sa, t) for t in x_values]
         axs[i].step(x_values, y_values, label=str(sa), color=colors[i%5])
         axs[i].grid(True)
@@ -194,6 +193,55 @@ def plotTerm(term: Term, start: float, end: float, precision=1000):
     plt.tight_layout()
     plt.legend()
     plt.show()
-        
-           
+
+# Formulas
+type Formula = None # Placeholder for early definition for FNeg/FConj[...]
+
+@dataclass
+class FAtom:
+    terms: list[Term]
+    p: Callable[float, bool]
+    name: str = ""
+    def __str__(self):
+        return (" " + self.name + " ").join([str(term) for term in self.terms])
+
+@dataclass
+class FNeg:
+    form: Formula
+    def __str__(self):
+        return "¬" + "(" + str(self.sa) + ")"
+
+@dataclass
+class FConj:
+    left : Formula
+    right: Formula
+    def __str__(self):
+        return "(" + str(self.left) + " ∧ " + str(self.right) + ")"
+
+""" Due to the nature of quantification over the reals,
+    the following are not easily representable using their
+    standard semantics:
     
+@dataclass
+class FForall:
+    bind: GVar
+    form: Formula
+
+@dataclass
+class FChop:
+    left : Formula
+    right: Formula
+
+Here, smarter semantics or approximations would need to be applied
+"""
+     
+type Formula = FAtom | FNeg | FConj
+
+def interpFormula(v: Valuation, intv: Interval, form: Formula) -> bool:
+    match form:
+        case FAtom(terms, p, name):
+            return p(list(map(lambda term: interpTerm(v, intv, term), terms)))
+        case FNeg(f):
+            return not interpFormula(v, intv, f)
+        case FConj(left, right):
+            return interpFormula(v, intv, left) and interpFormula(v, intv, right)
