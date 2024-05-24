@@ -21,15 +21,20 @@ light = Obs("Light",
 
 
 if __name__ == "__main__":
+    # Basic examples: Assertions
     sa = SEq(light, 0)
     print("Check if light is green at t=0.1")
     print(interpAssertion(sa, 0.1))
     print("Check if light is green at t=3.25")
     print(interpAssertion(sa, 3.25))
-    myTerm = Fun([GVar("x"), Integral(SConj(SNeg(SEq(button, 1)), SEq(light, 0)))], prod, "*")
+    # Basic examples: Terms
+    myAssertion = SConj(SNeg(SEq(button, 1)), SEq(light, 0))
+    myTerm = Fun([GVar("x"), Integral(myAssertion)], prod, "*")
     print("Term to be evaluated")
     print(myTerm)
-    print("Evaluation of term under gvar valuation {x -> 5.0} and interval [0,8]")
+    print("Evaluation of term under GVar valuation {x -> 5.0} and interval [0,8]")
     print(interpTerm({"x": 5.0}, Interval(0,8), myTerm))
-    plotObs([button, light], 0,8)
+    plotTerm(myTerm, 0, 8)
+    plotObs([button, light], 0, 8)
+    plotAssertions([myAssertion], 0, 8)
     

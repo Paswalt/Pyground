@@ -126,31 +126,74 @@ def interpTerm(v: Valuation, intv: Interval, term: Term) -> float:
 
 
 # Auxiliary functions
-
+def decomposeTerm(term: Term) -> list[Assertion]:
+    match term:
+        case Length():
+            return []
+        case GVar(name):
+            return []
+        case Integral(sa):
+            return [sa]
+        case Fun(terms, f):
+            res = []
+            for t in terms:
+                res += decomposeTerm(t)
+            return res
+        
+def decomposeAssertion(sa: Assertion) -> list[Obs]:
+    match sa:
+        case STrue():
+            return lst
+        case SFalse():
+            return lst
+        case SEq(obs, d):
+            return [obs]
+        case SNeg(sa):
+            return decomposeAssertion(sa)
+        case SConj(left, right):
+            lst_right = decomposeAssertion(right)
+            return lst_right + list(filter(lambda o: o.name not in [ob.name for ob in lst_right], decomposeAssertion(left)))
+    
 """
-Plots time diagrams for a list of observables. Finite domains that are not integers can still
-be represented as such, (e.g. enums).
+Plots time diagrams for a term. Finite domains that are not integers can still
+be mapped to them, (e.g. kinda as if using enums).
     Args:
         obs       : List of Observables
         start     : Start of the interval to be plotted
         end       : End of the interval to be plotted
         precision : How many points to consider between end and start
 """
-def plotObs(obs: list[Obs], start: float, end: float, precision=1000):
-    colors = ['black', 'blue', 'green', 'red', 'orange']
-    fig, axs = plt.subplots(len(obs), 1, sharex=True, figsize=(10,10))
-    if (len(obs) == 1):
-        axs = [axs]
+def plotTerm(term: Term, start: float, end: float, precision=1000):
     x_values = np.linspace(start, end, precision)
-    for i, ob in enumerate(obs):
-        y_values = [interpObs(ob, i) for i in x_values]
+    colors = ['black', 'blue', 'green', 'red', 'orange']
+    assertions = decomposeTerm(term)
+    observables = []
+    for sa in assertions:
+        observables += decomposeAssertion(sa)
+    num_plots = len(observables) + len(assertions)
+    # Create plot for each observable
+    fig, axs = plt.subplots(num_plots, 1, sharex=True, figsize=(10,10))
+    if (num_plots == 1):
+        axs = [axs]
+    print(axs)
+    for i, ob in enumerate(observables):
+        print(i)
+        y_values = [interpObs(ob, t) for t in x_values]
         axs[i].step(x_values, y_values, label=ob.name, color=colors[i%5])
         axs[i].set_ylabel(ob.name)
         axs[i].grid(True)
+    # Create plot for each state assertion
+    for i, sa in enumerate(assertions, len(observables)):
+        print(i)
+        y_values = [interpAssertion(sa, t) for t in x_values]
+        axs[i].step(x_values, y_values, label=str(sa), color=colors[i%5])
+        axs[i].grid(True)
+    # Plot configuration
     axs[-1].set_xlabel('t')
-    for ax in axs:
-        ax.xaxis.set_minor_locator(ticker.FixedLocator(np.arange(0.5, max(x_values), 1)))
-        ax.tick_params(which='minor', length=4)
     plt.xticks(np.arange(min(x_values), max(x_values)+1,1))
     plt.tight_layout()
+    plt.legend()
     plt.show()
+        
+           
+    
