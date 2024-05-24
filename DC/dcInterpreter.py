@@ -22,40 +22,50 @@ class Interval:
 @dataclass
 class Obs[T]:
     name: str
-    domain: Callable[Interval, T]
+    domain: Callable[float, T]
+    def __str__(self):
+        return self.name
 
 myObsBool = Obs("X",
-                lambda i: 1 if 2 <= i.start and i.end <= 5 else 0)
+                lambda t: 1 if 2 <= t and t <= 5 else 0)
 myObsBool2 = Obs("Y",
-                 lambda i: 1 if 3.5 <= i.start and i.end <= 5 else 0)
+                 lambda t: 1 if 3.5 <= t and t <= 5 else 0)
 
 def interpObs[T](obs: Obs[T], t: float) -> T:
-    return obs.domain(Interval(t,t))
+    return obs.domain(t)
 
 # State assertions
 type Assertion = None # Placeholder for early definition for SNeg/SConj
 
 @dataclass
 class STrue:
-    pass
+    def __str__(self):
+        return "True"
 
 @dataclass
 class SFalse:
-    pass
+    def __str__(self):
+        return "False"
 
 @dataclass
 class SEq[T]:
     obs: Obs[T]
     d: T
+    def __str__(self):
+        return str(self.obs) + " = " + str(self.d)
 
 @dataclass
 class SNeg:
     sa: Assertion
+    def __str__(self):
+        return "¬" + "(" + str(self.sa) + ")"
 
 @dataclass
 class SConj:
     left: Assertion
     right: Assertion
+    def __str__(self):
+        return "(" + str(self.left) + " ∧ " + str(self.right) + ")"
 
 type Assertion = STrue | SFalse | SEq | SNeg | SConj
 
@@ -77,20 +87,28 @@ type Term = None
 
 @dataclass
 class Length:
-    pass
+    def __str__(self):
+        return "l"
 
 @dataclass
 class GVar:
     name: str
+    def __str__(self):
+        return self.name
 
 @dataclass
 class Integral:
     sa: Assertion
+    def __str__(self):
+        return "∫" + str(self.sa)
 
 @dataclass
 class Fun:
     terms: list[Term]
     f: Callable[list[float], float]
+    name: str = ""
+    def __str__(self):
+        return ("f_lam" if self.name == "" else self.name) + "(" + ", ".join([str(term) for term in self.terms]) + ")"
 
 type Term = Length | GVar | Integral | Fun
 type Valuation = dict[str, float]
@@ -108,8 +126,18 @@ def interpTerm(v: Valuation, intv: Interval, term: Term) -> float:
 
 
 # Auxiliary functions
-colors = ['black', 'blue', 'green', 'red', 'orange']
-def plotObs(obs: list[Obs], start: float, end: float, precision=1000: int):
+
+"""
+Plots time diagrams for a list of observables. Finite domains that are not integers can still
+be represented as such, (e.g. enums).
+    Args:
+        obs       : List of Observables
+        start     : Start of the interval to be plotted
+        end       : End of the interval to be plotted
+        precision : How many points to consider between end and start
+"""
+def plotObs(obs: list[Obs], start: float, end: float, precision=1000):
+    colors = ['black', 'blue', 'green', 'red', 'orange']
     fig, axs = plt.subplots(len(obs), 1, sharex=True, figsize=(10,10))
     if (len(obs) == 1):
         axs = [axs]
@@ -126,10 +154,3 @@ def plotObs(obs: list[Obs], start: float, end: float, precision=1000: int):
     plt.xticks(np.arange(min(x_values), max(x_values)+1,1))
     plt.tight_layout()
     plt.show()
-
-
-# Main
-if __name__ == "__main__":
-    pass
-    #print(interpTerm({}, Interval(0,10) ,Integral(SConj(SEq(myObsBool, 1), SEq(myObsBool2, 1)))))
-    #plotObs([myObsBool], 0, 10)
