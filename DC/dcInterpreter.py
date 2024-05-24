@@ -109,7 +109,7 @@ def interpTerm(v: Valuation, intv: Interval, term: Term) -> float:
 
 # Auxiliary functions
 colors = ['black', 'blue', 'green', 'red', 'orange']
-def plotObs(obs, start, end, precision=1000):
+def plotObs(obs: list[Obs], start: float, end: float, precision=1000: int):
     fig, axs = plt.subplots(len(obs), 1, sharex=True, figsize=(10,10))
     if (len(obs) == 1):
         axs = [axs]
@@ -132,4 +132,4 @@ def plotObs(obs, start, end, precision=1000):
 if __name__ == "__main__":
     pass
     #print(interpTerm({}, Interval(0,10) ,Integral(SConj(SEq(myObsBool, 1), SEq(myObsBool2, 1)))))
-    plotObs([myObsBool], 0, 10)
+    #plotObs([myObsBool], 0, 10)
