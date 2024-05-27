@@ -17,7 +17,7 @@ button = Obs("Button",
 # green = 0, yellow = 1, red = 2
 light = Obs("Light",
             lambda t: 1 if 1.25 <= t and t <= 3.25
-                        else (2 if 3.25 <= t else 0))
+                        else (2 if 3.25 < t else 0))
 
 
 if __name__ == "__main__":
@@ -48,4 +48,3 @@ if __name__ == "__main__":
     print("Evaluation of formula under GVar valuation {} and interval [0,4]")
     print(interpFormula({}, Interval(0, 4), formula))
     plotTerm(left_term, 0, 8)
-    

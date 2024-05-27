@@ -200,7 +200,7 @@ type Formula = None # Placeholder for early definition for FNeg/FConj[...]
 @dataclass
 class FAtom:
     terms: list[Term]
-    p: Callable[float, bool]
+    p: Callable[list[float], bool]
     name: str = ""
     def __str__(self):
         return (" " + self.name + " ").join([str(term) for term in self.terms])
