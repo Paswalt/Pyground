@@ -183,9 +183,3 @@ class Generator:
                 file.write(" | ".join(productions) + "\n")
             file.write("\n")
             file.close()
-                    
-            
-            
-        
-    
-    
