@@ -1,13 +1,7 @@
-start final state q0
+start state q0
 final state q1
-state q2
-{a, b, c}
+{a, b}
+q0 x a -> q0
 q0 x a -> q1
-q0 x b -> q0
-q0 x c -> q0
-q1 x a -> q2
-q1 x b -> q1
-q1 x c -> q1
-q2 x b -> q1
-
+q1 x b -> q0
 

@@ -1,0 +1,4 @@
+Startsymbol: q0
+q0 -> aq0 | aq1 | a
+q1 -> bq0
+

@@ -119,13 +119,12 @@ def whitespaceParserPlus(s):
 
 # Parse grammar:
 #   Automata   ::= [statedef] alphabet [transition]
-#   statedef   ::= prefix "state" name endl
+#   statedef   ::= prefix "state" name
 #   prefix     ::= ("start"||"") ("final"||"")
-#   alphabet   ::= { charseq } endl
+#   alphabet   ::= { charseq }
 #   charseq    ::= char , charseq | char
-#   transition ::= name "x" char "->" name endl
-#   name       ::= str
-#   endl       ::= "\n"     
+#   transition ::= name "x" char "->" name
+#   name       ::= str   
 
 # 1. Statedef
 # 1.1 Prefix (Discontinued)
@@ -203,7 +202,7 @@ def alphabetParser(s):
     res = lle(charParser('}'), res)
     res = lle(whitespaceParser, res)
     res = lle(alternativesParser(endlParser, emptyParser), res)
-    return Just((frozenset(c for c in seq), res.match[1]))
+    return Just((set(c for c in seq), res.match[1]))
 
 # 3. Transitions
 def transitionParser(s):
@@ -256,7 +255,6 @@ def sanitizeTransitions(transitions):
         res.append(key)
     return res
         
-
 def parseFile(filename):
     with open(filename, 'r') as file:
         inp = file.read()

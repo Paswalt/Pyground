@@ -3,10 +3,10 @@ from dataclasses import dataclass
 
 @dataclass
 class DFA[Q]:
-    E     : frozenset[str]
+    E     : set[str]
     delta : Callable[[Q, str], Q]
     q0    : Q
-    F     : frozenset[Q]
+    F     : set[Q]
 
     def accept(self, inp: Iterable[str]) -> (bool, str):
         current = self.q0
