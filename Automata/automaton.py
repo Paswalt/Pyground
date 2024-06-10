@@ -25,4 +25,4 @@ def delta(state, i):
             return {State.QERR}
 
 
-aut = NDFA({'b', 'a'}, delta, State.Q0, {State.Q1})
+aut = NDFA({'a', 'b'}, delta, State.Q0, {State.Q1})

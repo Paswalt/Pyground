@@ -45,7 +45,7 @@ def validateTransitions(statedefs, alphabet, transitions) -> bool:
 def isDeterministic(transitions) -> bool:
     d = dict()
     for tup in transitions:
-        source, c = tup
+        source, c, _ = tup
         if (source, c) not in d:
             d[(source, c)] = 1
         else:
