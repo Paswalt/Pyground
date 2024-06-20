@@ -165,7 +165,7 @@ def statedefParser(s):
         return None
     name = res.match[0]
     res = lle(whitespaceParser, res)
-    res = lle(alternativesParser(endlParser, emptyParser), res)
+    res = lle(alternativesParser(endlsParser, emptyParser), res)
     return Just(((name, pref_s, pref_f), res.match[1]))
         
 def statedefListParser(s):
@@ -201,7 +201,7 @@ def alphabetParser(s):
     res = lle(whitespaceParser, res)
     res = lle(charParser('}'), res)
     res = lle(whitespaceParser, res)
-    res = lle(alternativesParser(endlParser, emptyParser), res)
+    res = lle(alternativesParser(endlsParser, emptyParser), res)
     return Just((set(c for c in seq), res.match[1]))
 
 # 3. Transitions
@@ -226,7 +226,7 @@ def transitionParser(s):
         return res
     destination = res.match[0]
     res = lle(whitespaceParser, res)
-    res = lle(alternativesParser(endlParser, emptyParser), res)
+    res = lle(alternativesParser(endlsParser, emptyParser), res)
     return Just(((source, c, destination), res.match[1]))
 
 def transitionListParser(s):

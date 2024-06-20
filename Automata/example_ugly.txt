@@ -1,0 +1,19 @@
+
+
+start     state q0
+
+
+
+final state    q1
+
+
+
+{a, b}
+
+
+
+q0 x a -> q0
+
+q0    x   a    ->    q1
+q1 x b -> q0
+
